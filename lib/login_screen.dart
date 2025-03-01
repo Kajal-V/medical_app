@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dashboard.dart';
 
 
 class LoginScreen extends StatelessWidget {
@@ -80,6 +81,10 @@ class LoginScreen extends StatelessWidget {
                     height: 45,
                     child: ElevatedButton(
                       onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => Dashboard()),
+                        );
                       },
                       child: Text("Login"),
                       style: ElevatedButton.styleFrom(
