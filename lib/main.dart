@@ -65,7 +65,7 @@ class LoginScreen extends StatelessWidget {
             ),
           ),
 
-          Text("Login To Your Account",
+          Text("Login To Your Account.",
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
