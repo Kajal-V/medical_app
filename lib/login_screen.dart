@@ -1,8 +1,106 @@
 import 'package:flutter/material.dart';
 import 'dashboard.dart';
 
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
 
-class LoginScreen extends StatelessWidget {
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  String? _mobileError;
+  String? _passwordError;
+
+  void loginUser(BuildContext context) {
+    String mobileNumber = mobileController.text.trim();
+    String password = passwordController.text;
+
+    // Reset error messages
+    setState(() {
+      _mobileError = null;
+      _passwordError = null;
+    });
+
+    // Mobile number validation
+    if (mobileNumber.isEmpty) {
+      setState(() {
+        _mobileError = "⚠ Mobile number is required";
+      });
+      return;
+    }
+
+    if (mobileNumber.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(mobileNumber)) {
+      setState(() {
+        _mobileError = "⚠ Enter a valid 10-digit mobile number";
+      });
+      return;
+    }
+
+    // Password validation
+    if (password.isEmpty) {
+      setState(() {
+        _passwordError = "⚠ Password is required";
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      setState(() {
+        _passwordError = "⚠ Password must be at least 6 characters";
+      });
+      return;
+    }
+
+    // Predefined valid credentials (for demo purposes)
+    String validMobile = "1234567890";
+    String validPassword = "password123";
+
+    if (mobileNumber != validMobile || password != validPassword) {
+      setState(() {
+        _passwordError = null; // Clear any previous errors
+      });
+
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            title: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red, size: 28),
+                SizedBox(width: 10),
+                Text("Login Failed", style: TextStyle(color: Colors.red)),
+              ],
+            ),
+            content: Text(
+              "Invalid mobile number or password. Please try again!",
+              style: TextStyle(fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK", style: TextStyle(color: Colors.blue)),
+              ),
+            ],
+          );
+        },
+      );
+
+      return;
+    }
+
+    // Login successful - Navigate to Dashboard
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Dashboard()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,9 +116,9 @@ class LoginScreen extends StatelessWidget {
           child: SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.all(15),
-              padding: EdgeInsets.all(20), // Add padding inside the container
+              padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white, // Set container color to white
+                color: Colors.white,
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
@@ -53,38 +151,58 @@ class LoginScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 20),
+
+                  // Mobile Number Field
                   TextField(
+                    controller: mobileController,
+                    keyboardType: TextInputType.phone,
+                    maxLength: 10,
                     decoration: InputDecoration(
-                      labelText: "Enter Username",
+                      labelText: "Enter Mobile Number",
                       border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.person_2_outlined),
+                      prefixIcon: Icon(Icons.phone),
                       contentPadding: EdgeInsets.all(10),
+                      errorText: _mobileError, // Show error message
+                      errorStyle: TextStyle(color: Colors.red),
                     ),
                   ),
+
                   SizedBox(height: 15),
+
+                  // Password Field with Eye Icon
                   TextField(
-                    obscureText: true, // Hide password
+                    controller: passwordController,
+                    obscureText: !_isPasswordVisible,
                     decoration: InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock_outline),
                       contentPadding: EdgeInsets.all(10),
+                      errorText: _passwordError, // Show error message
+                      errorStyle: TextStyle(color: Colors.red),
                       suffixIcon: IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.remove_red_eye_outlined),
+                        icon: Icon(
+                          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          color: Colors.grey.shade700,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
+
                   SizedBox(height: 20),
+
+                  // Login Button
                   SizedBox(
                     width: double.infinity,
                     height: 45,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => Dashboard()),
-                        );
+                        loginUser(context);
                       },
                       child: Text("Login"),
                       style: ElevatedButton.styleFrom(
@@ -96,9 +214,12 @@ class LoginScreen extends StatelessWidget {
                       ),
                     ),
                   ),
+
                   SizedBox(height: 20),
                   Text("or sign in with"),
                   SizedBox(height: 10),
+
+                  // Social Media Login Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
