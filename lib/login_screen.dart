@@ -151,7 +151,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: 20),
-
                   // Mobile Number Field
                   TextField(
                     controller: mobileController,
